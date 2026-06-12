@@ -1,0 +1,106 @@
+---
+title: "EDA and Documentation"
+format: html
+editor: visual
+---
+
+# Exploratory Data Analysis, Iterative Documentation & Decisions
+
+## School levels
+
+Checked `table(orig_local$sch_id, orig_local$grade, orig_local$X...year, exclude = NULL)` and there are several K8 schools (and one 05-08! lol).
+
+I created a 'category' variable for Elementary (n = 2), K-8 (n = 9), and Middle (n = 9). I grouped the 05-08 (sch_id 11) in with the K-8s.
+
+I don't know that it would matter much for the CDE accountability model since ES and MS are scored in the same framework, but it probably matters from an administrative or org chart perspective.
+
+## School names
+
+I cannot abide referring to schools only by ID number, so I'm scraping a list of actual DPS schools from the [CDE database](https://ed.cde.state.co.us/datapipeline/resources). I need twenty unique school names, so I picked twenty real school names (10 ES, 10 MS) and assigned them each a somewhat-referential fake: Barnum ES becomes Bailey ES, Columbine ES becomes Bluebell, etc. I used an online two-list [randomizer](https://chooserandom.com/sets/) to create pairs and actually assign the 20 school ID numbers to their new (fake) names.
+
+## New school in 2324
+
+Campus 11 is missing all data for SY2223\
+- Where were these kiddos in SY2223?\
+- Do I need to throw in a previous-year's-campus var for lagged effects? Probably overkill for a demo but would be worth exploring if data was avail
+
+## WIDA and missing data
+
+Var `ACCESS_Overall` is the student’s WIDA ACCESS level (proficiency). Stands for 'Assessing Comprehension and Communication in English State-to-State for English Language Learners' but I think they just really wanted it to spell out ACCESS.\
+- NCLB (2001) and focus on EL/EBs - Formerly "Wisconsin Delaware Arkansas" now "World-Class Instructional Design and Assessment" per [their history](https://wida.wisc.edu/about/mission-history) - Over 40 states, territories, fed agencies (Dept of Defense schools, I bet) - "Proficiency levels are interpretive scores... The proficiency level score is a whole number followed by a decimal. The whole number reflects the student’s proficiency level, and the number after the decimal reflects how far the student has progressed within that level." - "Proficiency level scores should not be compared across grades. For example, when a sixth grader and an eighth grader take the grade-level cluster 6–8 test and both earn proficiency-level scores of 4.0, this is the result of the eighth grader earning a higher scale score." - NB: looks like ACCESS scale scores could be compared across grade levels (like CogAT). But I don't have that raw number: just the variable.
+
+Levels per [WIDA guide](https://wida.wisc.edu/sites/default/files/resource/Interpretive-Guide.pdf):\
+- 1 Entering\
+- 2 Emerging\
+- 3 Developing\
+- 4 Expanding\
+- 5 Bridging\
+- 6 Reaching
+
+### Is the presence of this var functioning as a proxy indicator for ELL status?
+
+Hmm. Maybe? But it looks like 1,975 third and fourth graders *with the ELL flag* took their CMAS in English instead of the Spanish they almost certainly qualify for. YMMV for which of the WIDA levels qualifies as full English-language proficiency. This is present in every year
+
+### Who sat for WIDA in 2526?
+
+There are 77 kids *not* flagged as ELL who sat the WIDA. Is this a point-in-time issue? Post-ELL monitoring? Present in all grade levels in SY2526 (n = 74) but barely an issue in SY2425 (n = 3). Not present in initial two years, at all.
+
+### Is this a "parents must opt in to ELL services" issue?
+
+Consent decree documentation suggests (as in Tx) that multilingual families must consent to services... not sure how this dovetails. "Multilingual Learners are correctly identified, placed with trained teachers, and are receiving MLE/ELA program services in alignment with requirements and parent choice." per [August 2022 via BoardDocs](https://go.boarddocs.com/co/dpsk12/Board.nsf/files/CHJPDL640D1C/$file/Modified%20Consent%20Decree%20Presentation.pdf).
+
+## No student repeats across years
+
+This is absolutely a function of using a synthetic (or de-identified) dataset, since this would literally never happen in real life. Ran `group_by(stu_id) |> summarize(unq_years = n_distinct(year))` and the max was ONE! Wild.
+
+This is going to have implications for modeling: with kid-level panel data, we can use the kid as their own control for some vars that are more structural than school-side (e.g., race, sex) but we do not have this option for this dataset.
+
+Which forces us, functionally, into the thing I was going to do anyway: look for school-level effects using school-wide percentages as controls, rather than student-level (or classroom level) effects using the kid's specific demographic flags as controls.
+
+## Minimal student mobility
+
+Checking for the exposure or tradeoff for within-year-mobility-school effects, ran `group_by(stu_id) |> summarise(unique_schs = n_distinct(sch_id)) |> ungroup()` and then a frequency table. Eleven students (0.05%) were in 3 schools, 419 in two (2.2%), and the rest (18,361 unique IDs) in just one.
+
+If this project was being used for high-stakes decisions, I would certainly test model effects whilst including 'previous year school ID' as a variable for school-level effects *in order to see whether* any campus was materially affected by the mobility of these very-few students (2.28%).
+
+My gut says some effect is possible, especially if we had classroom-level info in the model, but not enough to move a whole school into or out of a category regarding `Expected`. Especially since no student repeats across years.
+
+## Count of kiddos testing in Spanish increases each year
+
+Grades 3 and 4 only (similar to Tx, fwiw)
+
+# Model and reshaping decisions
+
+Fitting by subject AND by grade seems like too much for a demonstration project. Especially because small n-counts means we could basically just be modeling a proxy for one teacher, which is definitely not something I want to take on by accident. 
+
+
+
+
+# Refs & Notes for later in the project ----
+
+https://drbtlr.github.io/beating-the-odds/beating-the-odds-code.html
+
+source("https://raw.githubusercontent.com/UrbanInstitute/urban_R_theme/master/urban_theme_windows.R")
+
+Original template content:
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Running Code
+
+When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).

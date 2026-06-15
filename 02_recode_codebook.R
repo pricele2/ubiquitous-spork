@@ -61,8 +61,8 @@ working_df = temp_orig |>
     "Native Hawaiian/PI" ~ "NHPI",
     "Two+ Races" ~ "TWO+",
     "White" ~ "WHIT")) |>
-  # ELL var
-  mutate(ell = recode_values(ell, "Y" ~ "1", "N" ~ "0", NA ~ NA)) |>
+  # ELL var -- recoding NA as zero
+  mutate(ell = recode_values(ell, "Y" ~ "1", "N" ~ "0", NA ~ "0")) |>
     mutate(ell = as.numeric(ell))  |>
   # IEP var
   mutate(iep = recode_values(iep,  "Y" ~ "1", "N" ~ "0")) |>
@@ -72,7 +72,7 @@ working_df = temp_orig |>
     mutate(gt = as.numeric(gt)) |>
   # language arts testing - Eng or Span
   mutate(sp_lang =
-    recode_values(sp_lang, "CMAS SLA" ~ "1", "CMAS ELA" ~ NA, "CMAS Math" ~ NA)) |>
+    recode_values(sp_lang, "CMAS SLA" ~ "1", "CMAS ELA" ~ "0", "CMAS Math" ~ "0")) |>
     mutate(sp_lang = as.numeric(sp_lang)) |>
   # subject needs no modifications
   # WIDA label needs the actual level for use in model
@@ -105,14 +105,19 @@ working_df = temp_orig |>
     TRUE ~ NA)) |>
   select(year, sch_id, grade, stu_id, sex, race, ell, iep, gt, sp_lang, subject, starts_with("wida"), starts_with("cmas"))
 
+colSums(is.na(working_df))
+# So far just WIDA related vars
+
 ## Convert RACEvar to dummies ----
-work2 = working_df |> select(stu_id, race) |> rename(value = race) |> mutate(dummy = as.character("1")) |> unique()
+work2 = working_df |> select(stu_id, race) |> rename(value = race) |>
+  mutate(dummy = as.character("1")) |> unique()
 
 work3 = pivot_wider(work2, names_from = value, names_prefix = "race_") |>
   mutate(stu_id = as.numeric(stu_id)) |>
   select(-dummy) |>
   mutate(across(where(is.character), ~ifelse(!is.na(.), "1",.))) |>
   mutate(across(everything(), ~as.numeric(.))) |> # !! it worked!
+  mutate(across(where(is.numeric), ~replace_na(., 0))) |> # FIXED BAYBEEEEEE
   mutate(stu_id = as.character(stu_id)) |>
   clean_names()
 
@@ -150,10 +155,11 @@ work8 = work6 |> filter(subject == "Math") |>
   select(year, sch_id, stu_id, starts_with("mat_"))
 
 work9 = work6 |> select(-c(subject, race, starts_with("cmas"))) |> unique()
+
+colSums(is.na(work9)) # great, still just WIDA related vars
 dim(work9) # 68193 down to 36121
 
 # Merge it all back together
-
 temp01 = left_join(work9, work7, by = c("year", "sch_id", "stu_id"))
   colnames(temp01)
 temp02 = left_join(temp01, work8, by = c("year", "sch_id", "stu_id"))
@@ -162,7 +168,6 @@ temp02 = left_join(temp01, work8, by = c("year", "sch_id", "stu_id"))
 analytic_ds = temp02 |> unique()
 
 ## Spit out the flat file for later as RDA and CSV
-
 write_excel_csv(analytic_ds,
   paste0(temp_wd, "/", today(), "_analytic_dataset.csv"),
   na = "",
@@ -179,7 +184,6 @@ rm(list = ls(pattern = "^work"))
 rm(list = ls(pattern = "^temp"))
 
 # Will need to break into MATH and ELA models, eventually
-
 codebook(analytic_ds,
          detailed_variables = TRUE, # mandatory images annoying
          detailed_scales = FALSE,

@@ -5,6 +5,7 @@
 .RData
 .RDataTmp
 *.csv
+*.rds
 *.rda
 figure/*.pdf
 # User-specific files

@@ -26,8 +26,7 @@ You will have approximately 15 minutes to discuss your performance task – 10 m
 3.  20 schools and 4 acad years, n unique students
 - 
 - Student-level categorical vars: Grade (6), Sex (3 per C.R.S. 25-2- 113.8), 
-- Curiously
-- No metrics for FRL/Eco-Dis, or attendance, or which form of test (alt?!)
+- Curiously: No metrics for FRL/Eco-Dis, or attendance, or which form of test (alt?!), or prior formative scores, or EL program type, or 504, etc. 
 - Chose not to create an 'ever / never / now ' var for EL but could have yielded additional insights
 
 4.  District POV: Math

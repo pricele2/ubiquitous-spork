@@ -7,22 +7,39 @@ editor: visual
 # Exploratory Data Analysis, Iterative Documentation & Decisions
 
 ## School levels
-
 Checked `table(orig_local$sch_id, orig_local$grade, orig_local$X...year, exclude = NULL)` and there are several K8 schools (and one 05-08! lol).
 
-I created a 'category' variable for Elementary (n = 2), K-8 (n = 9), and Middle (n = 9). I grouped the 05-08 (sch_id 11) in with the K-8s.
+I created a 'category' variable for Elementary (n = 2), K-8 (n = 9), and Middle (n = 9). I grouped the 05-08 (sch_id 11) in with the K-8s. I may end up revising this to just K-8 (n = 11) and MS-only (n = 9). N count for elem-only is super small to get a real signal. 
 
-I don't know that it would matter much for the CDE accountability model since ES and MS are scored in the same framework, but it probably matters from an administrative or org chart perspective.
+I don't know that it would matter much for the CDE SPL modeling since ES and MS are scored in the same framework, but it probably matters from an administrative or org chart perspective.
 
 ## School names
-
 I cannot abide referring to schools only by ID number, so I'm scraping a list of actual DPS schools from the [CDE database](https://ed.cde.state.co.us/datapipeline/resources). I need twenty unique school names, so I picked twenty real school names (10 ES, 10 MS) and assigned them each a somewhat-referential fake: Barnum ES becomes Bailey ES, Columbine ES becomes Bluebell, etc. I used an online two-list [randomizer](https://chooserandom.com/sets/) to create pairs and actually assign the 20 school ID numbers to their new (fake) names.
 
-## New school in 2324
-
+## New school enters the chat in 2324
 Campus 11 is missing all data for SY2223\
 - Where were these kiddos in SY2223?\
 - Do I need to throw in a previous-year's-campus var for lagged effects? Probably overkill for a demo but would be worth exploring if data was avail
+
+
+## No student repeats across years
+
+This is absolutely a function of using a synthetic (or de-identified) dataset, since this would literally never happen in real life. Ran `group_by(stu_id) |> summarize(unq_years = n_distinct(year))` and the max was ONE! Wild.
+
+This is going to have implications for modeling: with kid-level panel data, we can use the kid as their own control for some vars that are more structural than school-side (e.g., race, sex) but we do not have this option for this dataset.
+
+Which forces us, functionally, into the thing I was going to do anyway: look for school-level effects using school-wide percentages as controls, rather than student-level (or classroom level) effects using the kid's specific demographic flags as controls.
+
+## Minimal student mobility, all within-year
+Checking for the exposure or tradeoff for within-year-mobility-school effects, ran `group_by(stu_id) |> summarise(unique_schs = n_distinct(sch_id)) |> ungroup()` and then a frequency table. Eleven students (0.05%) were in 3 schools, 419 in two (2.2%), and the rest (18,361 unique IDs) in just one.
+
+If this project was being used for high-stakes decisions, I would certainly test model effects whilst including 'previous year school ID' as a variable for school-level effects *in order to see whether* any campus was materially affected by the mobility of these very-few students (2.28%).
+
+My gut says some effect is possible, especially if we had classroom-level info in the model, but not enough to move a whole school into or out of a category regarding `Expected`. Especially since no student repeats across years.
+
+## Count of kiddos testing in Spanish increases each year
+
+Grades 3 and 4 only (similar to Tx, fwiw)
 
 ## WIDA and missing data
 
@@ -37,41 +54,49 @@ Levels per [WIDA guide](https://wida.wisc.edu/sites/default/files/resource/Inter
 - 5 Bridging\
 - 6 Reaching
 
-### Is the presence of this var functioning as a proxy indicator for ELL status?
+### Is the presence of the ACCESS var functioning as a proxy indicator for ELL status? No
 
-Hmm. Maybe? But it looks like 1,975 third and fourth graders *with the ELL flag* took their CMAS in English instead of the Spanish they almost certainly qualify for. YMMV for which of the WIDA levels qualifies as full English-language proficiency. This is present in every year
+Hmm. Maybe? But it looks like 1,975 third and fourth graders *with the ELL flag* took their CMAS in English instead of the Spanish they may qualify for. This is happening every year. Is this a "parents must opt in to ELL services" issue? Consent decree documentation suggests (as in Tx) that multilingual families must consent to services: "Multilingual Learners are correctly identified, placed with trained teachers, and are receiving MLE/ELA program services in alignment with requirements and parent choice." per [August 2022 via BoardDocs](https://go.boarddocs.com/co/dpsk12/Board.nsf/files/CHJPDL640D1C/$file/Modified%20Consent%20Decree%20Presentation.pdf). Maybe these 1,975 families did not want their child receiving Sp-language services? Too bad we don't have their actual EL program codes to check if this As Expected.
+
+### I don't have the actual scores for WIDA testers, just their levels
+Scale scores are translated into levels, 1.0 to 6.0. 
 
 ### Who sat for WIDA in 2526?
 
 There are 77 kids *not* flagged as ELL who sat the WIDA. Is this a point-in-time issue? Post-ELL monitoring? Present in all grade levels in SY2526 (n = 74) but barely an issue in SY2425 (n = 3). Not present in initial two years, at all.
 
-### Is this a "parents must opt in to ELL services" issue?
+### 22 Unique kids missing their EL var in 25-26 ----
+Looks like some work to be done in systems-monitoring so this data is never missing.
 
-Consent decree documentation suggests (as in Tx) that multilingual families must consent to services... not sure how this dovetails. "Multilingual Learners are correctly identified, placed with trained teachers, and are receiving MLE/ELA program services in alignment with requirements and parent choice." per [August 2022 via BoardDocs](https://go.boarddocs.com/co/dpsk12/Board.nsf/files/CHJPDL640D1C/$file/Modified%20Consent%20Decree%20Presentation.pdf).
+### No "which language was test administered in?" for MATH or WIDA
+Just another observation.
 
-## No student repeats across years
+# CMAS Results ----
 
-This is absolutely a function of using a synthetic (or de-identified) dataset, since this would literally never happen in real life. Ran `group_by(stu_id) |> summarize(unq_years = n_distinct(year))` and the max was ONE! Wild.
+I found a crosswalk of scale scores and cut scores [on the CDE website](https://www.cde.state.co.us/assessment/cmas_perflvl_plcclms), but honestly it seems like overkill to reproduce the LEVEL variable based on the by-grade score when it's already been handed to me. I'm modifying the labels at tiny bit because they feel so verbose (removing the word 'expectations' from each label).
 
-This is going to have implications for modeling: with kid-level panel data, we can use the kid as their own control for some vars that are more structural than school-side (e.g., race, sex) but we do not have this option for this dataset.
+- Did Not Meet 1
+- Partially Met  2
+- Approached 3
+- Met 4
+- Exceeded 5
 
-Which forces us, functionally, into the thing I was going to do anyway: look for school-level effects using school-wide percentages as controls, rather than student-level (or classroom level) effects using the kid's specific demographic flags as controls.
-
-## Minimal student mobility
-
-Checking for the exposure or tradeoff for within-year-mobility-school effects, ran `group_by(stu_id) |> summarise(unique_schs = n_distinct(sch_id)) |> ungroup()` and then a frequency table. Eleven students (0.05%) were in 3 schools, 419 in two (2.2%), and the rest (18,361 unique IDs) in just one.
-
-If this project was being used for high-stakes decisions, I would certainly test model effects whilst including 'previous year school ID' as a variable for school-level effects *in order to see whether* any campus was materially affected by the mobility of these very-few students (2.28%).
-
-My gut says some effect is possible, especially if we had classroom-level info in the model, but not enough to move a whole school into or out of a category regarding `Expected`. Especially since no student repeats across years.
-
-## Count of kiddos testing in Spanish increases each year
-
-Grades 3 and 4 only (similar to Tx, fwiw)
 
 # Model and reshaping decisions
 
-Fitting by subject AND by grade seems like too much for a demonstration project. Especially because small n-counts means we could basically just be modeling a proxy for one teacher, which is definitely not something I want to take on by accident. 
+Fitting by subject AND by grade seems like too much for a demonstration project. Especially because small n-counts means we could basically just be modeling a proxy for one teacher, which is definitely not something I want to take on by accident.
+
+I have ruled out using a standard random effects model, since I do not believe that there are no omitted variables. But we do not meet the assumptions for a basic fixed-effects model either: I cannot argue with a straight face that the effect of a missing variable (here, FRL/SES/poverty) absolutely has the same effect for a 3rd grader as it does for a kiddo in 8th. (See Williams, 2018, "Panel Data 4" workshop)
+
+This lands me at "use a mixed effects model", which is not equivalent to a hierarchical or "multilevel" model (Bates, 2008).
+
+Definitely not trying to recreate the whole accty calculation framework, and my idea of finding similar schools has already partially been done with the Tableau tool at [site](https://ed.cde.state.co.us/accountability/data-tools/district-and-school-dashboard).
+
+I think I am going to use "Meets or Exceeds for Achievement" as the campus-level outcome (1 = yes). 
+
+
+**The school is the unit of analysis, people!** Not the student. 
+
 
 
 

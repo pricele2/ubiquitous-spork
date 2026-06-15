@@ -17,18 +17,18 @@ You will have approximately 15 minutes to discuss your performance task – 10 m
 
 - Anybody can give you a district-wide frequency table by grade and subject, which I have done at [private url]
 
-- My Goal: Predict school performance, and compare these predictions with actual school performance. Are the coefficients relatively stable in each year? 
+- My Goal: Predict school performance on a constructed metric of proficiency for ELA & math each (logit), and compare these predictions with actual school performance. 
 
 - Which types of schools are over- or under-performing in math or ELA, considering the non-school factors captured in the student demographic characteristics? 
 
-- Drawing heavily on the BTO Analysis project (2020) from the Strategic Data Project at Harvard GSE, with Appalachia REL and Kentucky DOE. Also https://libguides.princeton.edu/R-Panel 
+- Drawing heavily on the BTO Analysis project (2020) from the Strategic Data Project at Harvard GSE, with Appalachia REL and Kentucky DOE. 
 
 3.  20 schools and 4 acad years, n unique students
 - 
-- Student-level categorical vars: Grade (6), Sex (3), 
+- Student-level categorical vars: Grade (6), Sex (3 per C.R.S. 25-2- 113.8), 
 - Curiously
 - No metrics for FRL/Eco-Dis, or attendance, or which form of test (alt?!)
-- Atypically for a school dataset, no students appearing in more than 1 year
+- Chose not to create an 'ever / never / now ' var for EL but could have yielded additional insights
 
 4.  District POV: Math
 
@@ -58,4 +58,5 @@ You will have approximately 15 minutes to discuss your performance task – 10 m
 - `lmer4` and author workshop at https://pages.stat.wisc.edu/~bates/UseR2008/WorkshopD.pdf 
 - `PLM` and suggested tests at https://libguides.princeton.edu/R-Panel 
 - `merTools` (mixed-effects representation)
+- Lewis, Crystal. 2026. “Trying Out Dplyr 1.2.0.” February 9. https://cghlewis.com/blog/dplyr_update/. 
 

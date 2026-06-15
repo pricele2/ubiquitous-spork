@@ -4,22 +4,27 @@
 # # # # #
 
 # Define packages to load, then bring in using Librarian ----
+# NB: run update_all the first time or w any new packages added
 library(librarian)
-stock(tibble, dplyr, tidyr, readr, stringr, janitor, readxl, lubridate, openxlsx, ggplot2, googlesheets4, forcats,
-      # update_all =  TRUE, # run update_all the first time or w new packages
+stock(tibble, dplyr, tidyr, readr, stringr, janitor, readxl, lubridate, openxlsx, ggplot2, googlesheets4, forcats, fs, codebook,
+      # update_all =  TRUE,
       ask = TRUE)
 
-librarian::shelf(tibble, dplyr, tidyr, readr, stringr, janitor, readxl, lubridate, openxlsx, ggplot2, googlesheets4, tictoc, forcats,
+librarian::shelf(tibble, dplyr, tidyr, readr, stringr, janitor, readxl, lubridate, openxlsx, ggplot2, googlesheets4, tictoc, forcats, fs, codebook,
     update_all =  FALSE, ask = TRUE)
 
-print(.Last.value) # Confirm everything loaded appropriately
+# Confirm everything loaded appropriately
+print(.Last.value)
 
 # Define local WD for exports ----
 temp_wd = "C:/Users/Lauren/Documents/R/dps-demo"
+
 # Read in flat files from Google Sheets ----
 # NB: Requires initial authorization in browser (after: choose option 2)
 
 ## Student level data ----
+# First time from gsheets
+{
 gs4_auth()
 
 tic()
@@ -46,12 +51,11 @@ write_excel_csv(orig_df,
     col_names = TRUE,
     quote = "needed",
     escape = "none",  eol = "\r\n")
-
-## Read in flat file of student data from local ----
-orig_local <- read_csv(paste0(temp_wd, "/", today(),"_orig_df.csv")) |>
+}
 
 ## School names crosswalk ----
-tic()
+# First time from gsheets
+{tic()
 sch_names = read_sheet(
   "https://docs.google.com/spreadsheets/d/1TYbfKqOkfkUJajM-_0b2OYroUIKSBuFhfxuS0-ptf3s/edit?usp=sharing",
   range = "sch-name-id!A6:L26",
@@ -68,22 +72,32 @@ Sys.sleep(1)
 toc() # fine but make a local backup in case of connectivity
 
 ### Export crosswalk the first time ----
-# write_excel_csv(sch_names,
-#   paste0(temp_wd, "/", today(), "_sch_crosswalk.csv"),
-#   na = "",
-#   append = FALSE,
-#   col_names = TRUE,
-#   quote = "needed",
-#   escape = "none",  eol = "\r\n")
+write_excel_csv(sch_names,
+  paste0(temp_wd, "/", today(), "_sch_crosswalk.csv"),
+  na = "",
+  append = FALSE,
+  col_names = TRUE,
+  quote = "needed",
+  escape = "none",  eol = "\r\n")
+}
 
-# Exploratory on descriptives & missings ----
+# Read in local versions ----
+# NB: DPS crew will need to be careful of today() value
+# use instead `read_csv(paste0(temp_wd, "/", today(), "_orig_df.csv"))`
+
+dir_ls(temp_wd) # see line 20 above
+
+orig_local = read_csv("2026-06-10_orig_df.csv") |> as_tibble()
+sch_names = read_csv("2026-06-10_sch_crosswalk.csv") |> as_tibble()
+
+# Exploratory on descriptives & missings, could move these to the QMD ----
 
 ## School mobility prevalence ----
 temp0 = orig_local |>
   group_by(stu_id) |>
   summarise(unq_schs = n_distinct(sch_id)) |>
   ungroup()
-max(temp0$unq_schs)
+max(temp0$unq_schs) # three -- see EDA_notes.qmd for decision
 
 ## Panel data for same kids - confirm? ----
 length(unique(orig_local$stu_id))
@@ -92,13 +106,13 @@ temp1 = orig_local |>
   group_by(stu_id) |>
   summarise(unq_years = n_distinct(year)) |>
   ungroup()
-max(temp1$unq_years) # how TF do none of the kids repeat across years?
+max(temp1$unq_years) # NOPE! no kids repeat across years? Demo data!
 
-## kiddos testing in spanish - trends? ----
+## Tests in spanish plus ELs ----
 table(orig_local$test, orig_local$subject, orig_local$year)
 table(orig_local$test, orig_local$subject, orig_local$grade)
 
-## WIDA is a EL proficiency test ----
+### WIDA is a EL proficiency test ----
 # parallel to TELPAS, probably? Who is taking this WIDA instrument?
 table(orig_local$access, orig_local$test, orig_local$grade, exclude = NULL)
 # oooh yikes for grades 3 and 4
@@ -107,65 +121,30 @@ temp2 = orig_local |>
   filter(test == "CMAS SLA") |>
   select(sch_id, grade, ell, access)
 
-table(temp2$ell, temp2$access, exclude = NULL) # ok, not perfectly "ell" kids
+table(temp2$ell, temp2$access, exclude = NULL) # ok, not just the "ell" kids
 
+### Who sat the WIDA?
 temp3 = orig_local |>
   filter(!is.na(access)) |>
   select(sch_id, grade, ell, test, year)
 
 table(temp3$ell, temp3$test, temp3$grade, exclude = NULL) # there are 77 kids *not* flagged as ELL who sat the WIDA
 
-table(temp3$ell, temp3$test, temp3$year, exclude = NULL)
+table(temp3$ell, temp3$test, temp3$year, exclude = NULL) # mostly in 2526 (74)
 
-# No, doesn't align with the ELL flag in grades 3 and 4
+# No, doesn't align with the EL flag in grades 3 and 4
 temp4 = orig_local |> filter(ell == "Y", grade <= 4)
 
-# How many kids?
-length(unique(temp4$stu_id))
+length(unique(temp4$stu_id)) # 1975 students over 4 years
 
-# Every year? yes
+# Some in every year?
 table(temp4$access, temp4$test, temp4$grade, temp4$year, exclude = NULL)
+# yes: in every year there are gr3 and gr4 kids taking CMAS in english
+# too bad we don't have their actual EL program codes to check if this is OK
 
+## Look for missing data in key vars ----
+temp5 = orig_local |> filter(is.na(year)) # 0 score, lev_l, year, gt, iep
+temp6 = orig_local |> filter(is.na(ell)) # 22 unq IDs for ELL
 
 ## Clean up from exploratory----
 rm(list = ls(pattern = "^temp"))
-
-
-# Recodes / forcats! for multilevel modeling ----
-
-### sex - F ----
-# NB: three factor levels per C.R.S. 25-2- 113.8
-
-
-
-### race - Wh b/c 'achievement gap' ----
-
-
-
-### ell - b/c Consent Decree re ELL students ----
-
-
-
-### lang tested (eng/sp) for littles (var: subject) ----
-
-
-
-### students with disabilities, and GT ----
-
-
-
-### any twice-exceptional kiddos? ----
-
-
-
-### change 'access' to label, and cat var (forcats), fix NA ----
-
-
-
-### baseline year, and add label (forcats) ----
-
-
-## Add school ID names from crosswalk ----
-
-
-

@@ -24,7 +24,7 @@ Campus 11 is missing all data for SY2223\
 - Where were these kiddos in SY2223?\
 - Do I need to throw in a previous-year's-campus var for lagged effects? Probably overkill for a demo but would be worth exploring if data was avail
 
-## No student repeats across years
+## No student repeats across years? No, not correct. You ran something weird. 
 
 This is absolutely a function of using a synthetic (or de-identified) dataset, since this would literally never happen in real life. Ran `group_by(stu_id) |> summarize(unq_years = n_distinct(year))` and the max was ONE! Wild.
 

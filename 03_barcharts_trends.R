@@ -178,3 +178,26 @@ ggsave("g_ela_bygrade.png",
        dpi = 300)
 
 # Time permits: Run N-counts (table) for each and Write to Google Sheet
+colnames(tg_mat)
+
+tg_mat_all_grades = tg_mat |>
+  group_by(year, cmas_label) |>
+  summarise(pct_all = sum(numer) / sum(denom)) |>
+  ungroup()
+
+# Write to Google Sheet the first time
+sheet_write(tg_mat_all_grades,
+            ss = "https://docs.google.com/spreadsheets/d/1TYbfKqOkfkUJajM-_0b2OYroUIKSBuFhfxuS0-ptf3s/edit?usp=sharing",
+            sheet = "math-trends-distwide")
+
+colnames(tg_ela)
+tg_ela_all_grades = tg_ela |>
+  group_by(year, cmas_label) |>
+  summarise(pct_all = sum(numer) / sum(denom)) |>
+  ungroup()
+
+sheet_write(tg_ela_all_grades,
+            ss = "https://docs.google.com/spreadsheets/d/1TYbfKqOkfkUJajM-_0b2OYroUIKSBuFhfxuS0-ptf3s/edit?usp=sharing",
+            sheet = "ela-trends-distwide")
+
+

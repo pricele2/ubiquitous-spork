@@ -1,6 +1,7 @@
 # # # # #
 # LPRICE5
 # Demonstration project for Manager, Reporting & Analytics
+# Script 1
 # # # # #
 
 # Define packages to load, then bring in using Librarian ----
@@ -19,8 +20,9 @@ print(.Last.value)
 # Define local WD for exports ----
 temp_wd = "C:/Users/Lauren/Documents/R/dps-demo"
 
-# Read in flat files from Google Sheets ----
+# First time: Read in flat files from Google Sheets ----
 # NB: Requires initial authorization in browser (after: choose option 2)
+# Aftewards skip to line 86ish
 
 ## Student level data ----
 # First time from gsheets
@@ -82,7 +84,7 @@ write_excel_csv(sch_names,
 }
 
 # Read in local versions ----
-# NB: DPS crew will need to be careful of today() value
+# NB: Users will need to be careful of today() value
 # use instead `read_csv(paste0(temp_wd, "/", today(), "_orig_df.csv"))`
 
 dir_ls(temp_wd) # see line 20 above
@@ -90,7 +92,8 @@ dir_ls(temp_wd) # see line 20 above
 orig_local = read_csv("2026-06-10_orig_df.csv") |> as_tibble()
 sch_names = read_csv("2026-06-10_sch_crosswalk.csv") |> as_tibble()
 
-# Exploratory on descriptives & missings, could move these to the QMD ----
+# Exploratory on descriptives & missings ----
+# Could move these to the QMD, honestly; will do if tim
 
 ## School mobility prevalence ----
 temp0 = orig_local |>

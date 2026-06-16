@@ -1,18 +1,23 @@
-# Recoding! for modeling at campus level ----
-# Run first 20 lines of 01_import to inherit orig_local, or import it from local
-temp_wd = "C:/Users/Lauren/Documents/R/dps-demo"
-
-dir_ls(temp_wd) # see line 20 of 01_import.R
-
-orig_local = read_csv("2026-06-10_orig_df.csv") |> as_tibble()
-sch_names = read_csv("2026-06-10_sch_crosswalk.csv") |> as_tibble()
+# # # # # # # #
+# Script 2 -- Recoding for modeling at the campus level
+# # # # # # # #
 
 # Double-check packages are loaded
 librarian::shelf(tibble, dplyr, tidyr, readr, stringr, janitor, readxl, lubridate, openxlsx, ggplot2, googlesheets4, tictoc, forcats, fs, codebook,
-update_all =  FALSE, ask = TRUE)
-
+                 # additional pkgs for this stage
+                 lme4, lmerTest, ggrepel, modelbased,
+                 update_all =  FALSE, ask = TRUE)
 # Confirm everything loaded appropriately
 print(.Last.value)
+
+# Inherit analytic_ds from 02_recode or import it locally
+temp_wd = "C:/Users/Lauren/Documents/R/dps-demo"
+
+# Bring these in if they aren't already loaded
+orig_local = read_csv("2026-06-10_orig_df.csv") |> as_tibble()
+sch_names = read_csv("2026-06-10_sch_crosswalk.csv") |> as_tibble()
+
+# # # # # # # # # # # # # # # # END FRONTMATTER
 
 ## what are we starting with? then make a plan
 colnames(orig_local)
@@ -193,4 +198,5 @@ codebook(analytic_ds,
          exclude_from_detailed_display = c("stu_id", "sch_id", "sch_name"),
          indent = "#"
 )
-# All seems well! on to build the model
+
+## Continue to script 3 ----

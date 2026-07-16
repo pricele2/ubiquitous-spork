@@ -11,11 +11,58 @@ editor: visual
 
 ## Tools
 
-- QMD and rendered HTML in [GitHub repo]()
+- QMD and rendered HTML in [GitHub repo](https://github.com/pricele2/ubiquitous-spork/blob/main/readme-q.qmd)
 
 - Slide Deck at [Google Sheets](https://docs.google.com/presentation/d/1Xvh8pE-zxKt5kU-4MBBObHwTFkA72yaHa17FRKDwRqM/edit?usp=sharing)
 
 - Process mapping at [Lucid](https://lucid.app/documents/#/home?folder_id=recent) — URL in real time, in chat
+
+
+## Resources 
+
+- VDOE CSV - Fall 2526 Enrollment
+
+```{r}
+#| eval: true
+#| echo: false
+
+library(readr)
+library(tidyverse)
+library(janitor)
+fall_enr = read_csv("data/fall_membership_statistics.csv") |> as_tibble() |> 
+  clean_names()
+
+```
+
+- VDOE List of schools & addresses, cleaned
+
+```{r}
+#| eval: true 
+#| echo: false 
+
+library(readr)
+library(tidyverse)
+library(janitor)
+fcps_all_schools <- read_csv("data/fcps_all_schools.csv") |> as_tibble() |> 
+  clean_names() |> 
+  mutate(full_address = str_replace_all(full_address, "\n", " ")) |> 
+  mutate(full_address = str_trim(full_address)) |> 
+  mutate(sch_name = str_remove_all(name, "\n")) |> 
+  select(-c(og_cell, name)) |> 
+  select(sch_name, level, cat, phone, full_address) |> 
+  rename(grades = level, sch_cat = cat)
+
+# And merged
+
+dataset = left_join(fcps_all_schools, fall_enr, by = c("sch_name" = "school_name")) |> 
+  rename(sch_id = school_number, year = school_year) |> 
+  select(-c(division_number, division_name)) 
+
+```
+
+
+
+
 
 # Slide Deck Outline
 

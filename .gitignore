@@ -8,11 +8,11 @@
 *.rds
 *.rda
 figure/*.pdf
+
 # User-specific files
 .Ruserdata
 # Example code in package build process
 *-Ex.R
-*"_bto_OpenSDP.R"
 # Output files from R CMD build
 /*.tar.gz
 # Output files from R CMD check
@@ -30,6 +30,9 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+/*.css
+readme-q_files/libs/
+
 # R Environment Variables
 .Renviron
 # pkgdown site
@@ -38,4 +41,4 @@ docs/
 po/*~
 # RStudio Connect folder
 rsconnect/
-2026-06-13_analytic_RDS.rds
+

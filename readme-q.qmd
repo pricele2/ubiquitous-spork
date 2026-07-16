@@ -1,0 +1,196 @@
+---
+title: "FCPS Second Interview"
+author: "Lauren Price"
+format: html
+editor: visual
+---
+
+# Task at hand, overview
+
+"... a problem-solving activity designed to reflect the type of work performed in this role. Throughout the activity, you'll work through a realistic business scenario and discuss how you would approach the problem as new information becomes available. You'll have the opportunity to sketch or diagram your thinking as you explain your thought process."
+
+## Tools
+
+- QMD and rendered HTML in [GitHub repo]()
+
+- Slide Deck at [Google Sheets](https://docs.google.com/presentation/d/1Xvh8pE-zxKt5kU-4MBBObHwTFkA72yaHa17FRKDwRqM/edit?usp=sharing)
+
+- Process mapping at [Lucid](https://lucid.app/documents/#/home?folder_id=recent) — URL in real time, in chat
+
+# Slide Deck Outline
+
+## Intro & photo 
+
+
+
+### Parameters and inputs  
+"C:/Users/Lauren/Documents/R/fcps-demo/data/fall_membership_statistics.csv"
+
+<!--
+NB: Included all Categories from VDOE Build a Table, at 
+Disadvantaged
+Foster Care
+Homeless
+Migrant
+Military Connected
+English Learners
+Disabled 
+
+N schools and Y acad years, n unique students
+
+- Campus names & campus IDs 1:N
+
+- Student-level vars:
+
+- Hiccups in the dataset, appropriate for task -- noted in eda_notes.qmd
+
+- Curiously, no metrics for:
+--> 
+
+<!-- 
+#FRL/Eco-Dis, or attendance, or which form of test (alt?!), or prior formative scores, or EL program type, or 504, etc. 
+--> 
+
+### Problem Scoping
+
+- Who  
+
+- What  
+
+- When  
+
+- Where  
+
+- How  
+
+- Why  
+
+### Graphic 1 
+
+Set to facet_wrap by grade by year (stacked bar)
+
+### Graphic 2 
+
+Set to facet_wrap by grade by year (stacked bar)
+<!-- 
+
+<verbal transition> Simple descriptive statistics can be ... deceptively simple
+<Anscombe's quartet, or Datasaurus dozen>
+--> 
+
+### Recommendations:  
+
+<!-- 
+
+Predict school performance CMAS ELA & CMAS math, and compare the model with actual school performance. Considering the non-school factors captured in the student demographic characteristics.
+
+- Which schools are performing as suggested by the model?
+- Which schools are over- or under-performing in math or ELA?
+
+- Drawing heavily on the BTO Analysis project (2020) from the Strategic Data Project at Harvard GSE, with Appalachia REL and Kentucky DOE.
+
+- Lots of documentation at ____
+-->
+- Lorem ipsum  
+
+- Sit dolor  
+
+- Amet 
+
+
+### Colors in gslides deck template
+Hex ff664f orangey-red  
+
+Hex 51bc84 minty green  
+
+Hex 6ad2e9 tiffany blue  
+
+Hex ffe636 accent yellow  
+
+Hex fdbad9 blossom pink  
+
+Hex feffef neutral background  
+
+Hex 7570b3 stronger purple
+
+<!-- 
+Tried to play through the model outputs in the Shiny app from merTools pkg 
+
+library(merTools) # # nb - this will mask SELECT inside dplyr
+merTools::plotREsim(merTools::REsim(m_math, n.sims = 100), stat = "median", sd = TRUE)
+merTools::shinyMer(m_math, simData = sch_avg_center[1:100, ]) # first 150 rows
+librarian::check_attached() # make sure merTools isn't still attached
+-->
+
+### Graphic 1 as scatterplot
+
+
+### Graphic 2 as scatterplot
+
+
+### Both scatterplot
+
+
+### If this was not a demo project: 
+<!-- 
+- Campus Report Card with grade levels and special pops, with Quarto and a for-loop
+- Either PDF or HTML
+- Create an 'ever / never / now ' var for EL
+- Make it interactive! Compare two schools on any 2 metrics
+- Talked to university and industry colleagues about the model assumptions!
+- Identify clusters of actionable elements across schools
+-->
+
+### Finally: 
+
+<!-- 
+More details at pricele2.github.io / Appendix
+- Citations
+# - `lmer4` and author workshop at https://pages.stat.wisc.edu/~bates/UseR2008/WorkshopD.pdf 
+# - `PLM` and suggested tests at https://libguides.princeton.edu/R-Panel 
+# - `merTools` (mixed-effects representation)
+# - Lewis, Crystal. 2026. “Trying Out Dplyr 1.2.0.” February 9. https://cghlewis.com/blog/dplyr_update/. 
+-->
+
+### Notes to self / Resources
+<!-- 
+## Labels and data dictionaries
+library(labelled)
+mtcars <- mtcars |> set_variable_labels(mpg = "Miles per gallon", wt = "Weight (1,000 lbs)")
+ggplot(mtcars, aes(mpg, wt))
+
+#### TinyTable
+https://vincentarelbundock.github.io/tinytable/vignettes/gallery.html
+
+https://cghlewis.com/blog/dict_clean/
+
+https://rstudio.github.io/pointblank/ 
+
+https://www.r-bloggers.com/2023/06/mastering-data-aggregation-with-xtabs-in-r/ 
+
+https://www.r-bloggers.com/2023/05/what-is-the-sink-function-capturing-output-to-external-files/ 
+--> 
+
+
+<!-- Template text -->
+
+<!-- ## Quarto -->
+
+<!-- Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>. -->
+
+<!-- ## Running Code -->
+
+<!-- When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this: -->
+
+<!-- ```{r} -->
+<!-- 1 + 1 -->
+<!-- ``` -->
+
+<!-- You can add options to executable code like this -->
+
+<!-- ```{r} -->
+<!-- #| echo: false -->
+<!-- 2 * 2 -->
+<!-- ``` -->
+
+<!-- The `echo: false` option disables the printing of code (only output is displayed). -->

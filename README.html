@@ -352,67 +352,115 @@ display: none;
 </div>
 
 
-<div id="demo-project" class="section level1">
-<h1>Demo project</h1>
+<div id="slide-outlines-for-demo" class="section level1">
+<h1>Slide Outlines for Demo</h1>
 <p>repo title: ubiquitous-spork</p>
-<div id="task-directions" class="section level2">
-<h2>Task directions</h2>
-<p>Create a visual presentation of no more than 10 slides with your
-analysis.</p>
-<p>Provides an overview of performance results, trends, and
-recommendations that district leaders should know about CMAS student
-performance.</p>
-<p>Uses Google Slides, and incorporates visualizations and
-interpretations.</p>
-<p>You will have approximately 15 minutes to discuss your performance
-task – 10 minutes to walk through your presentation and 5 minutes to
-share your data approach.</p>
-<ol style="list-style-type: decimal">
-<li><p>Title page &amp; intro &amp; photo of presenter</p></li>
-<li><p>Task at hand, overview: “Provide an overview of performance
-results, trends, and recommendations that district leaders should know
-about CMAS student performance”</p></li>
-</ol>
+<div id="intro-photo-of-presenter" class="section level3">
+<h3>Intro &amp; photo of presenter</h3>
+</div>
+<div id="task-at-hand-overview" class="section level3">
+<h3>Task at hand, overview</h3>
+<!-- 
+- Anybody can give you a district-wide frequency table by grade and subject and year, which I have done and I'll show my work 
+
+- But expertise can go beyond organizing the facts into tables: wanted recommendations to be meaningful / actionable 
+
+- Results and trends and THEN recommendations  
+-->
+</div>
+<div id="parameters-and-inputs" class="section level3">
+<h3>Parameters and inputs</h3>
+<p>N schools and Y acad years, n unique students</p>
 <ul>
-<li><p>Anybody can give you a district-wide frequency table, which I
-have done at <private url></p></li>
-<li><p>My Goal: Predict school performance based on the demographic
-makeup of schools’ student populations, and compare these predictions
-with actual school performance.</p></li>
-<li><p>Which grades and/or subjects in which schools are over- or
-under-performing, considering the non-school factors captured in the
-student demographic characteristics?</p></li>
-<li><p>Drawing heavily on the BTO Analysis project (2020) from the
-Strategic Data Project at Harvard GSE, with Appalachia REL and Kentucky
-DOE.</p></li>
+<li><p>Campus names &amp; campus IDs 1:N</p></li>
+<li><p>Student-level vars:</p></li>
+<li><p>Hiccups in the dataset, appropriate for task – noted in
+eda_notes.qmd</p></li>
+<li><p>Curiously, no metrics for:</p></li>
 </ul>
-<ol start="3" style="list-style-type: decimal">
-<li>20 schools and 4 acad years, n unique students</li>
-</ol>
+<!-- 
+#FRL/Eco-Dis, or attendance, or which form of test (alt?!), or prior formative scores, or EL program type, or 504, etc. 
+-->
+</div>
+<div id="graphic-1" class="section level3">
+<h3>Graphic 1</h3>
+<p>Set to facet_wrap by grade by year (stacked bar)</p>
+</div>
+<div id="graphic-2" class="section level3">
+<h3>Graphic 2</h3>
+<p>Set to facet_wrap by grade by year (stacked bar) <!-- 
+
+<verbal transition> Simple descriptive statistics can be ... deceptively simple
+<Anscombe's quartet, or Datasaurus dozen>
+--></p>
+</div>
+<div id="recommendations" class="section level3">
+<h3>Recommendations:</h3>
+<!-- 
+
+Predict school performance CMAS ELA & CMAS math, and compare the model with actual school performance. Considering the non-school factors captured in the student demographic characteristics.
+
+- Which schools are performing as suggested by the model?
+- Which schools are over- or under-performing in math or ELA?
+
+- Drawing heavily on the BTO Analysis project (2020) from the Strategic Data Project at Harvard GSE, with Appalachia REL and Kentucky DOE.
+
+- Lots of documentation at ____
+-->
 <ul>
-<li>multiple student-level vars</li>
-<li>student mobility v low</li>
-<li>curiously no metrics for FRL/Eco-Dis, or attendance, or which form
-of test (alt?!)</li>
-<li>atypically for a school dataset, no students appearing in more than
-1 year</li>
+<li><p>Lorem ipsum</p></li>
+<li><p>Sit dolor</p></li>
+<li><p>Amet</p></li>
 </ul>
-<ol start="4" style="list-style-type: decimal">
-<li><p>District POV: Math</p></li>
-<li><p>District POV: ELA</p></li>
-<li><p>District POV: ELL</p></li>
-<li><p>GT and SPED</p></li>
-<li></li>
-<li></li>
-<li><p>If this was not a demo project:</p></li>
-</ol>
-<ul>
-<li>Campus Report Card, with Quarto and a for-loop</li>
-<li>Make it interactive! Compare two schools on any 2 metrics</li>
-</ul>
-<ol start="11" style="list-style-type: decimal">
-<li>More details at pricele2.github.io / Appendix, baybeeeee</li>
-</ol>
+</div>
+<div id="colors-in-gslides-deck-template" class="section level3">
+<h3>Colors in gslides deck template</h3>
+<p>Hex ff664f orangey-red</p>
+<p>Hex 51bc84 minty green</p>
+<p>Hex 6ad2e9 tiffany blue</p>
+<p>Hex ffe636 accent yellow</p>
+<p>Hex fdbad9 blossom pink</p>
+<p>Hex feffef neutral background</p>
+<p>Hex 7570b3 stronger purple</p>
+<!-- 
+Tried to play through the model outputs in the Shiny app from merTools pkg 
+
+library(merTools) # # nb - this will mask SELECT inside dplyr
+merTools::plotREsim(merTools::REsim(m_math, n.sims = 100), stat = "median", sd = TRUE)
+merTools::shinyMer(m_math, simData = sch_avg_center[1:100, ]) # first 150 rows
+librarian::check_attached() # make sure merTools isn't still attached
+-->
+</div>
+<div id="graphic-1-as-scatterplot" class="section level3">
+<h3>Graphic 1 as scatterplot</h3>
+</div>
+<div id="graphic-2-as-scatterplot" class="section level3">
+<h3>Graphic 2 as scatterplot</h3>
+</div>
+<div id="both-scatterplot" class="section level3">
+<h3>Both scatterplot</h3>
+</div>
+<div id="if-this-was-not-a-demo-project" class="section level3">
+<h3>If this was not a demo project:</h3>
+<!-- 
+- Campus Report Card with grade levels and special pops, with Quarto and a for-loop
+- Either PDF or HTML
+- Create an 'ever / never / now ' var for EL
+- Make it interactive! Compare two schools on any 2 metrics
+- Talked to university and industry colleagues about the model assumptions!
+- Identify clusters of actionable elements across schools
+-->
+</div>
+<div id="finally" class="section level3">
+<h3>Finally:</h3>
+<!-- 
+More details at pricele2.github.io / Appendix
+- Citations
+# - `lmer4` and author workshop at https://pages.stat.wisc.edu/~bates/UseR2008/WorkshopD.pdf 
+# - `PLM` and suggested tests at https://libguides.princeton.edu/R-Panel 
+# - `merTools` (mixed-effects representation)
+# - Lewis, Crystal. 2026. “Trying Out Dplyr 1.2.0.” February 9. https://cghlewis.com/blog/dplyr_update/. 
+-->
 </div>
 </div>
 

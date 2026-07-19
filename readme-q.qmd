@@ -20,11 +20,43 @@ editor: visual
 
 ## Resources 
 
+```{r}
+#| label: install.library
+#| eval: true
+#| echo: true
+#| code-overflow: wrap
+#| output: false
+
+library(tidycensus)
+library(tidyverse) # dplyr and ggplot2
+library(mapview)
+library(censusapi)
+library(tidygeocoder)
+library(sf)
+
+fairfax_pop_2020 = get_decennial(
+  geography = "tract",
+  variables = "P1_001N", # TOTAL POPULATION
+  state = "VA",
+  county = "Fairfax County", 
+  sumfile = "pl", 
+  year = 2020, 
+  geometry = TRUE, # Toggle T/F for shapefiles
+  show_call = TRUE)
+
+sum(fairfax_pop_2020$value) # 1150309
+
+ggplot(fairfax_pop_2020, aes(fill = value, color = value)) + 
+  geom_sf() # + facet_wrap(~ variable)
+
+```
+
 - VDOE CSV - Fall 2526 Enrollment
 
 ```{r}
 #| eval: true
 #| echo: false
+#| output: false
 
 library(readr)
 library(tidyverse)
@@ -39,6 +71,7 @@ fall_enr = read_csv("data/fall_membership_statistics.csv") |> as_tibble() |>
 ```{r}
 #| eval: true 
 #| echo: false 
+#| output: false
 
 library(readr)
 library(tidyverse)
@@ -60,7 +93,9 @@ dataset = left_join(fcps_all_schools, fall_enr, by = c("sch_name" = "school_name
 
 ```
 
+- Dataset merged 
 
+- Dataset, geocoded 
 
 
 
